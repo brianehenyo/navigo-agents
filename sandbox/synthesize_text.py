@@ -35,18 +35,33 @@ def synthesize_text(text):
     # Note: the voice can also be specified by name.
     # Names of voices can be retrieved with client.list_voices().
     voice = texttospeech.types.VoiceSelectionParams(
-        language_code='en-US',
-        ssml_gender=texttospeech.enums.SsmlVoiceGender.FEMALE)
+        # language_code='ja-JP', # JP
+        language_code='en-US', # EN
+        # name='ja-JP-Wavenet-C' # JP Driver
+        # name='en-US-Wavenet-A' # EN Familiarization
+        # name='en-US-Wavenet-D' # EN Driver 
+        name='en-US-Wavenet-E' # EN Optimal
+        # name='en-US-Wavenet-B' # EN Explorer
+        # ssml_gender=texttospeech.enums.SsmlVoiceGender.NEUTRAL
+        )
 
     audio_config = texttospeech.types.AudioConfig(
-        audio_encoding=texttospeech.enums.AudioEncoding.MP3)
+        audio_encoding=texttospeech.enums.AudioEncoding.MP3,
+        effects_profile_id=['handset-class-device']
+        # ,pitch=3.6      # PH Driver
+        # ,pitch=-3.20    # PH Optimal
+        # ,pitch=0        # PH Explorer
+        # ,pitch=1.0      # PH Familiarization
+        # ,speaking_rate=1.30
+        )
 
     response = client.synthesize_speech(input_text, voice, audio_config)
 
     # The response's audio_content is binary.
-    with open('output.mp3', 'wb') as out:
+    fileName = 'E_O_2_4_en.mp3'
+    with open(fileName, 'wb') as out:
         out.write(response.audio_content)
-        print('Audio content written to file "output.mp3"')
+        print('Audio content written to file ', fileName)
 # [END tts_synthesize_text]
 
 
@@ -68,7 +83,9 @@ def synthesize_ssml(ssml):
     # Names of voices can be retrieved with client.list_voices().
     voice = texttospeech.types.VoiceSelectionParams(
         language_code='en-US',
-        ssml_gender=texttospeech.enums.SsmlVoiceGender.FEMALE)
+        name='en-US-Standard-B'
+        # ssml_gender=texttospeech.enums.SsmlVoiceGender.NEUTRAL
+        )
 
     audio_config = texttospeech.types.AudioConfig(
         audio_encoding=texttospeech.enums.AudioEncoding.MP3)
