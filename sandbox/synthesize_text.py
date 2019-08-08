@@ -35,18 +35,18 @@ def synthesize_text(text):
     # Note: the voice can also be specified by name.
     # Names of voices can be retrieved with client.list_voices().
     voice = texttospeech.types.VoiceSelectionParams(
-        language_code='ja-JP', # JP
-        # language_code='fil-PH', # PH
+        # language_code='ja-JP', # JP
+        language_code='fil-PH', # PH
         # language_code='en-US', # EN
         # name='ja-JP-Wavenet-C' # JP Driver
         # name='ja-JP-Wavenet-D' # JP Optimal
-        name='ja-JP-Wavenet-B' # JP Explorer
+        # name='ja-JP-Wavenet-B' # JP Explorer
         # name='ja-JP-Wavenet-A' # JP Familiarization
         # name='en-US-Wavenet-A' # EN Familiarization
         # name='en-US-Wavenet-D' # EN Driver 
         # name='en-US-Wavenet-E' # EN Optimal
         # name='en-US-Wavenet-B' # EN Explorer
-        # name='fil-PH-Wavenet-A' # PH Agent
+        name='fil-PH-Wavenet-A' # PH Agent
         # ssml_gender=texttospeech.enums.SsmlVoiceGender.NEUTRAL
         )
 
@@ -55,7 +55,7 @@ def synthesize_text(text):
         effects_profile_id=['handset-class-device']
         # ,pitch=3.6      # PH Driver
         # ,pitch=-3.20    # PH Optimal
-        # ,pitch=0        # PH Explorer
+        ,pitch=0        # PH Explorer
         # ,pitch=1.0      # PH Familiarization
         # ,speaking_rate=1.20
         )
@@ -63,7 +63,7 @@ def synthesize_text(text):
     response = client.synthesize_speech(input_text, voice, audio_config)
 
     # The response's audio_content is binary.
-    fileName = 'E_left_jp.mp3'
+    fileName = 'E_intro_ph.mp3'
     with open(fileName, 'wb') as out:
         out.write(response.audio_content)
         print('Audio content written to file ', fileName)
