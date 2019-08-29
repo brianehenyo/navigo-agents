@@ -98,6 +98,7 @@ nasa_tlx %>%
 decision_points %>% 
   select(subject, task, devratio) %>% 
   # filter(devratio > 0.0) %>% 
+  mutate(task = factor(task, levels = c("PD", "DO", "DE", "PO", "OD", "OE", "PE", "ED", "EO"))) %>% 
   ggplot(aes(x = task, y = devratio)) +
   geom_jitter(alpha = .7, width = .25, height = 0) + 
   aes(col = task) +
@@ -115,6 +116,7 @@ decision_points %>%
 decision_points %>% 
   select(subject, choice, devratio) %>% 
   # filter(devratio > 0.0) %>% 
+  mutate(choice = factor(choice, levels = c("D", "O", "E", "N"))) %>% 
   ggplot(aes(x = choice, y = devratio)) +
   geom_jitter(alpha = .7, width = .25, height = 0) + 
   aes(col = choice) +
