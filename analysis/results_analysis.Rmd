@@ -1,0 +1,26 @@
+---
+title: "Navigo - Agents"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r cars}
+nasa_tlx <- read.csv("../results/nasa_tlx.csv", stringsAsFactors = FALSE)
+decision_points <- read.csv("../results/decision_points.csv", stringsAsFactors = FALSE)
+post_trial <- read.csv("../results/post_trial.csv", stringsAsFactors = FALSE)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
