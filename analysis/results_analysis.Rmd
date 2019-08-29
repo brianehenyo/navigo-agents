@@ -7,7 +7,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Load files
 
 ```{r cars}
 nasa_tlx <- read.csv("../results/nasa_tlx.csv", stringsAsFactors = FALSE)
@@ -15,12 +15,83 @@ decision_points <- read.csv("../results/decision_points.csv", stringsAsFactors =
 post_trial <- read.csv("../results/post_trial.csv", stringsAsFactors = FALSE)
 ```
 
-## Including Plots
+## NASA TLX
 
-You can also embed plots, for example:
+### Pure Conditions
 
 ```{r pressure, echo=FALSE}
-plot(pressure)
+text_color = paletteer_d(ghibli, MarnieLight1)[2]
+
+nasa_tlx %>% 
+  select(subject, pd.total, po.total, pe.total) %>% 
+  melt(id("subject")) %>% 
+  ggplot(aes(x = variable, y = value)) +
+  geom_jitter(alpha = .7, width = .25, height = .25) + 
+  aes(col = variable) +
+  scale_color_discrete(guide = FALSE) + 
+  geom_boxplot(aes(fill = variable), colour = text_color, show.legend = FALSE, 
+               outlier.shape = NA, alpha = 0.4) +
+  labs(title = "NASA TLX Scores for pure conditions",
+       x = "",
+       y = "NASA TLX Score") +
+  theme_tufte(base_family = "Avenir", ticks = FALSE)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+### Driver Model factorial conditions
+
+```{r}
+nasa_tlx %>% 
+  select(subject, pd.total, do.total, de.total, od.total, ed.total) %>% 
+  melt(id("subject")) %>% 
+  ggplot(aes(x = variable, y = value)) +
+  geom_jitter(alpha = .7, width = .25, height = .25) + 
+  aes(col = variable) +
+  scale_color_discrete(guide = FALSE) + 
+  geom_boxplot(aes(fill = variable), colour = text_color, show.legend = FALSE, 
+               outlier.shape = NA, alpha = 0.4) +
+  labs(title = "NASA TLX Scores for Driver conditions",
+       x = "",
+       y = "NASA TLX Score") +
+  theme_tufte(base_family = "Avenir", ticks = FALSE)
+```
+
+### Explorer Conditions
+
+```{r}
+nasa_tlx %>% 
+  select(subject, pe.total, ed.total, eo.total, de.total, oe.total) %>% 
+  melt(id("subject")) %>% 
+  ggplot(aes(x = variable, y = value)) +
+  geom_jitter(alpha = .7, width = .25, height = .25) + 
+  aes(col = variable) +
+  scale_color_discrete(guide = FALSE) + 
+  geom_boxplot(aes(fill = variable), colour = text_color, show.legend = FALSE, 
+               outlier.shape = NA, alpha = 0.4) +
+  labs(title = "NASA TLX Scores for Explorer conditions",
+       x = "",
+       y = "NASA TLX Score") +
+  theme_tufte(base_family = "Avenir", ticks = FALSE)
+```
+
+### Optimal Conditions
+
+```{r}
+nasa_tlx %>% 
+  select(subject, po.total, od.total, oe.total, do.total, eo.total) %>% 
+  melt(id("subject")) %>% 
+  ggplot(aes(x = variable, y = value)) +
+  geom_jitter(alpha = .7, width = .25, height = .25) + 
+  aes(col = variable) +
+  scale_color_discrete(guide = FALSE) + 
+  geom_boxplot(aes(fill = variable), colour = text_color, show.legend = FALSE, 
+               outlier.shape = NA, alpha = 0.4) +
+  labs(title = "NASA TLX Scores for Optimal conditions",
+       x = "",
+       y = "NASA TLX Score") +
+  theme_tufte(base_family = "Avenir", ticks = FALSE)
+```
+
+###
+
+
+
