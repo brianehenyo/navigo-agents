@@ -92,6 +92,8 @@ nasa_tlx %>%
   theme_tufte(base_family = "Avenir", ticks = FALSE)
 ```
 
+## Deviations
+
 ### Impact on Deviations
 
 ```{r}
@@ -149,5 +151,84 @@ decision_points %>%
        y = "") +
   theme_tufte(base_family = "Avenir", ticks = TRUE)
 ```
+
+## Confidence and Trust
+
+### Confidence
+
+```{r}
+post_trial %>% 
+  mutate(pd = pd.conf, po = po.conf, pe = pe.conf, do = do.conf, de = de.conf, od = od.conf, oe = oe.conf, ed = ed.conf, eo = eo.conf) %>% 
+  select(subject, pd, do, de, po, od, oe, pe, ed, eo) %>% 
+  melt(id("subject")) %>% 
+  ggplot(aes(x = value)) +
+  geom_bar() +
+  aes(fill = variable) + 
+  scale_fill_viridis_d(guide = FALSE) + 
+  facet_wrap(~variable) +
+  theme_tufte(base_family = "Avenir", ticks = FALSE)
+```
+
+### Trust
+
+```{r}
+post_trial %>% 
+  mutate(pd = pd.trust, po = po.trust, pe = pe.trust, do = do.trust, de = de.trust, 
+         od = od.trust, oe = oe.trust, ed = ed.trust, eo = eo.trust) %>% 
+  select(subject, pd, do, de, po, od, oe, pe, ed, eo) %>% 
+  melt(id("subject")) %>% 
+  ggplot(aes(x = value)) +
+  geom_bar() +
+  aes(fill = variable) + 
+  scale_fill_viridis_d(guide = FALSE) + 
+  facet_wrap(~variable) +
+  theme_tufte(base_family = "Avenir", ticks = FALSE)
+```
+
+## Detect Conversations
+
+```{r}
+post_trial %>% 
+  filter(subject > 3) %>% 
+  mutate(pd = pd.conv, po = po.conv, pe = pe.conv, do = do.conv, de = de.conv, 
+         od = od.conv, oe = oe.conv, ed = ed.conv, eo = eo.conv) %>% 
+  select(subject, pd, do, de, po, od, oe, pe, ed, eo) %>% 
+  melt(id("subject")) %>% 
+  mutate(value = case_when(value == 1 ~ "Yes",
+                           value == 0 ~ "No")) %>% 
+  ggplot(aes(x = value)) +
+  geom_bar() +
+  aes(fill = value) + 
+  scale_fill_viridis_d(guide = FALSE) + 
+  facet_wrap(~variable) +
+  coord_flip() +
+  theme_tufte(base_family = "Avenir", ticks = FALSE)
+```
+
+## Familiarization vs Choice
+
+```{r}
+familiarization <- post_trial %>% 
+  select(subject, f.good)
+
+decision_points %>% 
+  left_join(familiarization) %>% 
+  select(subject, choice, f.good) %>% 
+  filter(subject > 3) %>% 
+  count(subject, choice, f.good) %>% 
+  mutate(ratio_choice = ceiling((n/9)*100)) %>% 
+  group_by(choice, f.good) %>% 
+  summarize(mean_ratio_choice = mean(ratio_choice, na.rm = TRUE)) %>% 
+  ggplot(aes(x = f.good, y = mean_ratio_choice)) +
+  geom_col() +
+  aes(fill = choice) +
+  scale_fill_viridis_d(guide = FALSE) +
+  facet_wrap(~choice) +
+  theme_tufte(base_family = "Avenir", ticks = FALSE)
+```
+
+
+
+
 
 
