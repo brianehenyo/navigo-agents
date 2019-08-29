@@ -46,9 +46,10 @@ nasa_tlx %>%
   ggplot(aes(x = variable, y = value)) +
   geom_jitter(alpha = .7, width = .25, height = .25) + 
   aes(col = variable) +
-  scale_color_discrete(guide = FALSE) + 
+  scale_color_brewer(palette = "Set2", guide = FALSE) + 
   geom_boxplot(aes(fill = variable), colour = text_color, show.legend = FALSE, 
                outlier.shape = NA, alpha = 0.4) +
+  scale_fill_brewer(palette = "Set2", guide = FALSE) +
   labs(title = "NASA TLX Scores for Driver conditions",
        x = "",
        y = "NASA TLX Score") +
@@ -91,7 +92,41 @@ nasa_tlx %>%
   theme_tufte(base_family = "Avenir", ticks = FALSE)
 ```
 
-###
+### Impact on Deviations
+
+```{r}
+decision_points %>% 
+  select(subject, task, devratio) %>% 
+  filter(devratio > 0.0) %>% 
+  ggplot(aes(x = task, y = devratio)) +
+  geom_jitter(alpha = .7, width = .25, height = 0) + 
+  aes(col = task) +
+  scale_color_discrete(guide = FALSE) + 
+  geom_boxplot(aes(fill = task), colour = text_color, show.legend = FALSE, 
+               outlier.shape = NA, alpha = 0.4) +
+  labs(title = "Deviation Ratio per Condition",
+       subtitle = "Only included drives with >0 deviations",
+       x = "",
+       y = "Deviation Ratio") +
+  theme_tufte(base_family = "Avenir", ticks = FALSE)
+```
+
+```{r}
+decision_points %>% 
+  select(subject, choice, devratio) %>% 
+  filter(devratio > 0.0) %>% 
+  ggplot(aes(x = choice, y = devratio)) +
+  geom_jitter(alpha = .7, width = .25, height = 0) + 
+  aes(col = choice) +
+  scale_color_discrete(guide = FALSE) + 
+  geom_boxplot(aes(fill = choice), colour = text_color, show.legend = FALSE, 
+               outlier.shape = NA, alpha = 0.4) +
+  labs(title = "Deviation Ratio per Choice",
+       subtitle = "Only included drives with >0 deviations",
+       x = "",
+       y = "Deviation Ratio") +
+  theme_tufte(base_family = "Avenir", ticks = FALSE)
+```
 
 
 
