@@ -128,5 +128,24 @@ decision_points %>%
   theme_tufte(base_family = "Avenir", ticks = FALSE)
 ```
 
+### Histogram of Choices
+
+```{r}
+decision_points %>% 
+  select(subject, task, choice) %>% 
+  mutate(task = factor(task, levels = c("PD", "DO", "DE", "PO", "OD", "OE", "PE", "ED", "EO"))) %>% 
+  mutate(choice = factor(choice, levels = c("N", "E", "O", "D"))) %>% 
+  group_by(task) %>% 
+  ggplot(aes(x = choice)) +
+  geom_bar(alpha = 0.8) +
+  aes(fill = choice) +
+  scale_fill_brewer(palette = "Set2", guide = FALSE) + 
+  coord_flip() +
+  facet_wrap(~task) +
+  labs(title = "Choice per Condition",
+       x = "",
+       y = "") +
+  theme_tufte(base_family = "Avenir", ticks = TRUE)
+```
 
 
