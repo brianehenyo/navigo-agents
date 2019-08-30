@@ -45,6 +45,7 @@ nasa_tlx %>%
 hist(nasa_tlx$pd.total, col="red", xlim=c(1,100), prob=TRUE)
 x <- seq(1,100,0.1)
 curve(dnorm(x,mean=mean(nasa_tlx$pd.total), sd=sd(nasa_tlx$pd.total)), 1, 100, col="blue", add=TRUE)
+stat.desc(nasa_tlx$pd.total)
 ```
 
 PD scores are normally distributed. p-value is greater than 0.05 thus the null hypothesis that it is normally distributed is NOT rejected.
@@ -59,6 +60,7 @@ shapiro.test(nasa_tlx$pd.total)
 hist(nasa_tlx$po.total, col="red", xlim=c(1,100), prob=TRUE)
 x <- seq(1,100,0.1)
 curve(dnorm(x,mean=mean(nasa_tlx$po.total), sd=sd(nasa_tlx$po.total)), 1, 100, col="blue", add=TRUE)
+stat.desc(nasa_tlx$po.total)
 ```
 
 PO scores are normally distributed. p-value is greater than 0.05 thus the null hypothesis that it is normally distributed is NOT rejected.
@@ -73,6 +75,7 @@ shapiro.test(nasa_tlx$po.total)
 hist(nasa_tlx$pe.total, col="red", xlim=c(1,100), prob=TRUE)
 x <- seq(1,100,0.1)
 curve(dnorm(x,mean=mean(nasa_tlx$pe.total), sd=sd(nasa_tlx$pe.total)), 1, 100, col="blue", add=TRUE)
+stat.desc(nasa_tlx$pe.total)
 ```
 
 PE scores are normally distributed. p-value is greater than 0.05 thus the null hypothesis that it is normally distributed is NOT rejected.
@@ -108,6 +111,9 @@ var.test(nasa_tlx$pe.total, nasa_tlx$po.total)
 ```
 
 *Student's Paired t-test*
+* Workload for Pure Driver condition is significantly less than the workload for Pure Optimal condition
+* Workload for Pure Driver condition is significantly less than the workload for Pure Explorer condition
+* Workload for Pure Optimal condition is significantly greater than the workload for Pure Explorer condition
 
 ```{r}
 t.test(nasa_tlx$pd.total, nasa_tlx$po.total, paired = TRUE, alternative = "less")
