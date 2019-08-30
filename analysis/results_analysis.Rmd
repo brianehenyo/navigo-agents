@@ -37,6 +37,24 @@ nasa_tlx %>%
   theme_tufte(base_family = "Avenir", ticks = FALSE)
 ```
 
+## Paired t-test
+
+### PD Condition
+
+```{r}
+hist(nasa_tlx$pd.total, col="red", xlim=c(1,100), prob=TRUE)
+x <- seq(1,100,0.1)
+curve(dnorm(x,mean=mean(nasa_tlx$pd.total), sd=sd(nasa_tlx$pd.total)), 1, 100, col="blue", add=TRUE)
+```
+
+```{r}
+shapiro.test(nasa_tlx$pd.total)
+```
+
+### 
+
+## RQ1: Workload
+
 ### Driver Model factorial conditions
 
 ```{r}
@@ -92,7 +110,7 @@ nasa_tlx %>%
   theme_tufte(base_family = "Avenir", ticks = FALSE)
 ```
 
-## Deviations
+## RQ1: Deviations
 
 ### Impact on Deviations
 
@@ -207,6 +225,8 @@ post_trial %>%
 
 ## Familiarization vs Choice
 
+### All conditions
+
 ```{r}
 familiarization <- post_trial %>% 
   select(subject, f.good)
@@ -227,8 +247,44 @@ decision_points %>%
   theme_tufte(base_family = "Avenir", ticks = FALSE)
 ```
 
+### Only conditions with D
 
+```{r}
+decision_points %>% 
+  left_join(familiarization) %>% 
+  filter(subject > 3) %>% 
+  filter(agent1 == 'D' | agent2 == 'D') %>% 
+  select(subject, choice, f.good) %>% 
+  count(subject, choice, f.good) %>% 
+  mutate(ratio_choice = ceiling((n/5)*100)) %>% 
+  group_by(f.good, choice) %>% 
+  summarize(mean_ratio_choice = mean(ratio_choice, na.rm = TRUE)) %>% 
+  ggplot(aes(x = choice, y = mean_ratio_choice)) +
+  geom_col() +
+  aes(fill = choice) +
+  scale_fill_viridis_d(guide = FALSE) +
+  facet_wrap(~f.good) +
+  theme_tufte(base_family = "Avenir", ticks = FALSE)
+```
 
+### Conditions with D scenarios
 
+```{r}
+decision_points %>% 
+  left_join(familiarization) %>% 
+  filter(subject > 3) %>% 
+  filter(task == 'PD' | agent2 == 'D') %>% 
+  select(subject, choice, f.good) %>% 
+  count(subject, choice, f.good) %>% 
+  mutate(ratio_choice = ceiling((n/3)*100)) %>% 
+  group_by(f.good, choice) %>% 
+  summarize(mean_ratio_choice = mean(ratio_choice, na.rm = TRUE)) %>% 
+  ggplot(aes(x = choice, y = mean_ratio_choice)) +
+  geom_col() +
+  aes(fill = choice) +
+  scale_fill_viridis_d(guide = FALSE) +
+  facet_wrap(~f.good) +
+  theme_tufte(base_family = "Avenir", ticks = FALSE)
+```
 
 
