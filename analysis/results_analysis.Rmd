@@ -107,6 +107,14 @@ var.test(nasa_tlx$po.total, nasa_tlx$pe.total)
 var.test(nasa_tlx$pe.total, nasa_tlx$po.total)
 ```
 
+*Student's Paired t-test*
+
+```{r}
+t.test(nasa_tlx$pd.total, nasa_tlx$po.total, paired = TRUE, alternative = "less")
+t.test(nasa_tlx$pd.total, nasa_tlx$pe.total, paired = TRUE, alternative = "less")
+t.test(nasa_tlx$po.total, nasa_tlx$pe.total, paired = TRUE, alternative = "greater")
+```
+
 
 ### Driver Model factorial conditions
 
