@@ -88,6 +88,7 @@ Variances are equal because p-value > 0.05 which does NOT reject the null hypoth
 
 ```{r}
 var.test(nasa_tlx$pd.total, nasa_tlx$po.total)
+var.test(nasa_tlx$po.total, nasa_tlx$pd.total)
 ```
 
 _PD vs PE_
@@ -95,6 +96,7 @@ Variances are equal because p-value > 0.05 which does NOT reject the null hypoth
 
 ```{r}
 var.test(nasa_tlx$pd.total, nasa_tlx$pe.total)
+var.test(nasa_tlx$pe.total, nasa_tlx$pd.total)
 ```
 
 _PO vs PE_
@@ -102,6 +104,7 @@ Variances are equal because p-value > 0.05 which does NOT reject the null hypoth
 
 ```{r}
 var.test(nasa_tlx$po.total, nasa_tlx$pe.total)
+var.test(nasa_tlx$pe.total, nasa_tlx$po.total)
 ```
 
 
