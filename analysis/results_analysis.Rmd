@@ -15,7 +15,7 @@ decision_points <- read.csv("../results/decision_points.csv", stringsAsFactors =
 post_trial <- read.csv("../results/post_trial.csv", stringsAsFactors = FALSE)
 ```
 
-## RQ1: Workload - NASA TLX
+## RQ1.a: Workload - NASA TLX
 
 ### Pure Conditions
 
@@ -36,8 +36,6 @@ nasa_tlx %>%
        y = "NASA TLX Score") +
   theme_tufte(base_family = "Avenir", ticks = FALSE)
 ```
-
-#### Paired t-test
 
 *PD Condition*
 
@@ -84,6 +82,8 @@ PE scores are normally distributed. p-value is greater than 0.05 thus the null h
 shapiro.test(nasa_tlx$pe.total)
 ```
 
+#### Paired t-test
+
 *Fisher's F Test*
 
 _PD vs PO_
@@ -121,6 +121,67 @@ t.test(nasa_tlx$pd.total, nasa_tlx$pe.total, paired = TRUE, alternative = "less"
 t.test(nasa_tlx$po.total, nasa_tlx$pe.total, paired = TRUE, alternative = "greater")
 ```
 
+### Shapiro-Wilk's Normality Tests for other Conditions
+
+*DO Condition*
+
+```{r}
+hist(nasa_tlx$do.total, col="red", xlim=c(1,100), prob=TRUE)
+x <- seq(1,100,0.1)
+curve(dnorm(x,mean=mean(nasa_tlx$do.total), sd=sd(nasa_tlx$do.total)), 1, 100, col="blue", add=TRUE)
+stat.desc(nasa_tlx$do.total)
+shapiro.test(nasa_tlx$do.total)
+```
+
+*DE Condition*
+
+```{r}
+hist(nasa_tlx$de.total, col="red", xlim=c(1,100), prob=TRUE)
+x <- seq(1,100,0.1)
+curve(dnorm(x,mean=mean(nasa_tlx$de.total), sd=sd(nasa_tlx$de.total)), 1, 100, col="blue", add=TRUE)
+stat.desc(nasa_tlx$de.total)
+shapiro.test(nasa_tlx$de.total)
+```
+
+*OD Condition*
+
+```{r}
+hist(nasa_tlx$od.total, col="red", xlim=c(1,100), prob=TRUE)
+x <- seq(1,100,0.1)
+curve(dnorm(x,mean=mean(nasa_tlx$od.total), sd=sd(nasa_tlx$od.total)), 1, 100, col="blue", add=TRUE)
+stat.desc(nasa_tlx$od.total)
+shapiro.test(nasa_tlx$od.total)
+```
+
+*OE Condition*
+
+```{r}
+hist(nasa_tlx$oe.total, col="red", xlim=c(1,100), prob=TRUE)
+x <- seq(1,100,0.1)
+curve(dnorm(x,mean=mean(nasa_tlx$oe.total), sd=sd(nasa_tlx$oe.total)), 1, 100, col="blue", add=TRUE)
+stat.desc(nasa_tlx$oe.total)
+shapiro.test(nasa_tlx$oe.total)
+```
+
+*ED Condition*
+
+```{r}
+hist(nasa_tlx$ed.total, col="red", xlim=c(1,100), prob=TRUE)
+x <- seq(1,100,0.1)
+curve(dnorm(x,mean=mean(nasa_tlx$ed.total), sd=sd(nasa_tlx$ed.total)), 1, 100, col="blue", add=TRUE)
+stat.desc(nasa_tlx$ed.total)
+shapiro.test(nasa_tlx$ed.total)
+```
+
+*EO Condition*
+
+```{r}
+hist(nasa_tlx$eo.total, col="red", xlim=c(1,100), prob=TRUE)
+x <- seq(1,100,0.1)
+curve(dnorm(x,mean=mean(nasa_tlx$eo.total), sd=sd(nasa_tlx$eo.total)), 1, 100, col="blue", add=TRUE)
+stat.desc(nasa_tlx$eo.total)
+shapiro.test(nasa_tlx$eo.total)
+```
 
 ### Driver Model factorial conditions
 
@@ -141,6 +202,26 @@ nasa_tlx %>%
   theme_tufte(base_family = "Avenir", ticks = FALSE)
 ```
 
+#### Paired t-test
+
+*Fisher's F Test*
+
+```{r}
+var.test(nasa_tlx$pd.total, nasa_tlx$do.total)
+var.test(nasa_tlx$pd.total, nasa_tlx$de.total)
+var.test(nasa_tlx$pd.total, nasa_tlx$od.total)
+var.test(nasa_tlx$pd.total, nasa_tlx$ed.total)
+```
+
+*Student's Paired t-test*
+
+```{r}
+t.test(nasa_tlx$do.total, nasa_tlx$pd.total, paired = TRUE, alternative = "greater")
+t.test(nasa_tlx$de.total, nasa_tlx$pd.total, paired = TRUE, alternative = "greater")
+t.test(nasa_tlx$od.total, nasa_tlx$pd.total, paired = TRUE, alternative = "greater")
+t.test(nasa_tlx$ed.total, nasa_tlx$pd.total, paired = TRUE, alternative = "greater")
+```
+
 ### Explorer Conditions
 
 ```{r}
@@ -157,6 +238,32 @@ nasa_tlx %>%
        x = "",
        y = "NASA TLX Score") +
   theme_tufte(base_family = "Avenir", ticks = FALSE)
+```
+
+#### Paired t-test
+
+*Fisher's F Test*
+
+```{r}
+var.test(nasa_tlx$pe.total, nasa_tlx$ed.total)
+var.test(nasa_tlx$pe.total, nasa_tlx$eo.total)
+var.test(nasa_tlx$pe.total, nasa_tlx$de.total)
+var.test(nasa_tlx$pe.total, nasa_tlx$oe.total)
+```
+
+*Student's Paired t-test*
+
+```{r}
+t.test(nasa_tlx$ed.total, nasa_tlx$pe.total, paired = TRUE, alternative = "greater")
+t.test(nasa_tlx$de.total, nasa_tlx$pe.total, paired = TRUE, alternative = "greater")
+t.test(nasa_tlx$oe.total, nasa_tlx$pe.total, paired = TRUE, alternative = "greater")
+```
+
+*Wilcoxon Signed-rank test*
+* EO Condition has a significantly greater workload compared to the Pure E condition.
+
+```{r}
+wilcox.test(nasa_tlx$eo.total, nasa_tlx$pe.total, paired = TRUE, alternative = "greater")
 ```
 
 ### Optimal Conditions
@@ -177,7 +284,34 @@ nasa_tlx %>%
   theme_tufte(base_family = "Avenir", ticks = FALSE)
 ```
 
-## RQ1: Deviations
+#### Paired t-test
+
+*Fisher's F Test*
+
+```{r}
+var.test(nasa_tlx$po.total, nasa_tlx$od.total)
+var.test(nasa_tlx$po.total, nasa_tlx$oe.total)
+var.test(nasa_tlx$po.total, nasa_tlx$do.total)
+var.test(nasa_tlx$po.total, nasa_tlx$eo.total)
+```
+
+*Student's Paired t-test*
+* The DO condition had a significantly greater workload than the Pure O condition.
+
+```{r}
+t.test(nasa_tlx$od.total, nasa_tlx$po.total, paired = TRUE, alternative = "greater")
+t.test(nasa_tlx$oe.total, nasa_tlx$po.total, paired = TRUE, alternative = "greater")
+t.test(nasa_tlx$do.total, nasa_tlx$po.total, paired = TRUE, alternative = "greater")
+```
+
+*Wilcoxon Signed-rank test*
+* EO Condition has a significantly greater workload compared to the Pure E condition.
+
+```{r}
+wilcox.test(nasa_tlx$eo.total, nasa_tlx$po.total, paired = TRUE, alternative = "greater")
+```
+
+## RQ1.b: Deviations
 
 ### Impact on Deviations
 
@@ -237,7 +371,7 @@ decision_points %>%
   theme_tufte(base_family = "Avenir", ticks = TRUE)
 ```
 
-## Confidence and Trust
+## RQ2: Confidence and Trust
 
 ### Confidence
 
@@ -252,6 +386,31 @@ post_trial %>%
   scale_fill_viridis_d(guide = FALSE) + 
   facet_wrap(~variable) +
   theme_tufte(base_family = "Avenir", ticks = FALSE)
+```
+
+*Shapiro-Wilk's Test*
+
+```{r}
+shapiro.test(post_trial$pd.conf)
+shapiro.test(post_trial$po.conf)
+shapiro.test(post_trial$pe.conf)
+shapiro.test(post_trial$od.conf)
+shapiro.test(post_trial$oe.conf)
+shapiro.test(post_trial$do.conf)
+shapiro.test(post_trial$de.conf)
+shapiro.test(post_trial$ed.conf)
+shapiro.test(post_trial$eo.conf)
+```
+
+*Wilcoxon Signed-rank test*
+
+```{r}
+wilcox.test(post_trial$od.conf, post_trial$pd.conf, paired = TRUE)
+wilcox.test(post_trial$ed.conf, post_trial$pd.conf, paired = TRUE)
+wilcox.test(post_trial$do.conf, post_trial$po.conf, paired = TRUE)
+wilcox.test(post_trial$eo.conf, post_trial$po.conf, paired = TRUE)
+wilcox.test(post_trial$de.conf, post_trial$pe.conf, paired = TRUE)
+wilcox.test(post_trial$oe.conf, post_trial$pe.conf, paired = TRUE)
 ```
 
 ### Trust
@@ -270,7 +429,19 @@ post_trial %>%
   theme_tufte(base_family = "Avenir", ticks = FALSE)
 ```
 
+*Wilcoxon Signed-rank test*
+
+```{r}
+wilcox.test(post_trial$od.trust, post_trial$pd.trust, paired = TRUE)
+wilcox.test(post_trial$ed.trust, post_trial$pd.trust, paired = TRUE)
+wilcox.test(post_trial$do.trust, post_trial$po.trust, paired = TRUE)
+wilcox.test(post_trial$eo.trust, post_trial$po.trust, paired = TRUE)
+wilcox.test(post_trial$de.trust, post_trial$pe.trust, paired = TRUE)
+wilcox.test(post_trial$oe.trust, post_trial$pe.trust, paired = TRUE)
+```
+
 ## RQ3: Detect Conversations
+
 
 ```{r}
 post_trial %>% 
