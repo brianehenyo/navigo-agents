@@ -15,7 +15,7 @@ decision_points <- read.csv("../results/decision_points.csv", stringsAsFactors =
 post_trial <- read.csv("../results/post_trial.csv", stringsAsFactors = FALSE)
 ```
 
-## NASA TLX
+## RQ1: Workload - NASA TLX
 
 ### Pure Conditions
 
@@ -37,9 +37,9 @@ nasa_tlx %>%
   theme_tufte(base_family = "Avenir", ticks = FALSE)
 ```
 
-## Paired t-test
+#### Paired t-test
 
-### PD Condition
+*PD Condition*
 
 ```{r}
 hist(nasa_tlx$pd.total, col="red", xlim=c(1,100), prob=TRUE)
@@ -47,13 +47,63 @@ x <- seq(1,100,0.1)
 curve(dnorm(x,mean=mean(nasa_tlx$pd.total), sd=sd(nasa_tlx$pd.total)), 1, 100, col="blue", add=TRUE)
 ```
 
+PD scores are normally distributed. p-value is greater than 0.05 thus the null hypothesis that it is normally distributed is NOT rejected.
+
 ```{r}
 shapiro.test(nasa_tlx$pd.total)
 ```
 
-### 
+*PO Condition*
 
-## RQ1: Workload
+```{r}
+hist(nasa_tlx$po.total, col="red", xlim=c(1,100), prob=TRUE)
+x <- seq(1,100,0.1)
+curve(dnorm(x,mean=mean(nasa_tlx$po.total), sd=sd(nasa_tlx$po.total)), 1, 100, col="blue", add=TRUE)
+```
+
+PO scores are normally distributed. p-value is greater than 0.05 thus the null hypothesis that it is normally distributed is NOT rejected.
+
+```{r}
+shapiro.test(nasa_tlx$po.total)
+```
+
+*PE Condition*
+
+```{r}
+hist(nasa_tlx$pe.total, col="red", xlim=c(1,100), prob=TRUE)
+x <- seq(1,100,0.1)
+curve(dnorm(x,mean=mean(nasa_tlx$pe.total), sd=sd(nasa_tlx$pe.total)), 1, 100, col="blue", add=TRUE)
+```
+
+PE scores are normally distributed. p-value is greater than 0.05 thus the null hypothesis that it is normally distributed is NOT rejected.
+
+```{r}
+shapiro.test(nasa_tlx$pe.total)
+```
+
+*Fisher's F Test*
+
+_PD vs PO_
+Variances are equal because p-value > 0.05 which does NOT reject the null hypothesis.
+
+```{r}
+var.test(nasa_tlx$pd.total, nasa_tlx$po.total)
+```
+
+_PD vs PE_
+Variances are equal because p-value > 0.05 which does NOT reject the null hypothesis.
+
+```{r}
+var.test(nasa_tlx$pd.total, nasa_tlx$pe.total)
+```
+
+_PO vs PE_
+Variances are equal because p-value > 0.05 which does NOT reject the null hypothesis.
+
+```{r}
+var.test(nasa_tlx$po.total, nasa_tlx$pe.total)
+```
+
 
 ### Driver Model factorial conditions
 
@@ -203,7 +253,7 @@ post_trial %>%
   theme_tufte(base_family = "Avenir", ticks = FALSE)
 ```
 
-## Detect Conversations
+## RQ3: Detect Conversations
 
 ```{r}
 post_trial %>% 
@@ -223,7 +273,7 @@ post_trial %>%
   theme_tufte(base_family = "Avenir", ticks = FALSE)
 ```
 
-## Familiarization vs Choice
+## RQ4: Familiarization vs Choice
 
 ### All conditions
 
