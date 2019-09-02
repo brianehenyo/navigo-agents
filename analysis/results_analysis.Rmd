@@ -351,12 +351,14 @@ decision_points %>%
   theme_tufte(base_family = "Avenir", ticks = FALSE)
 ```
 
+## RQ1.c Impact on Choices
+
 ### Histogram of Choices
 
 ```{r}
 decision_points %>% 
   select(subject, task, choice) %>% 
-  mutate(task = factor(task, levels = c("PD", "DO", "DE", "PO", "OD", "OE", "PE", "ED", "EO"))) %>% 
+  mutate(task = factor(task, levels = c("PD", "OD", "ED", "PO", "DO", "EO", "PE", "DE", "OE"))) %>% 
   mutate(choice = factor(choice, levels = c("N", "E", "O", "D"))) %>% 
   group_by(task) %>% 
   ggplot(aes(x = choice)) +
@@ -369,7 +371,106 @@ decision_points %>%
        x = "",
        y = "") +
   theme_tufte(base_family = "Avenir", ticks = TRUE)
+
+ggsave("../outputs/choice_per_condition.png", width=8, height=5)
 ```
+
+### Task vs Choices
+
+```{r}
+decisions_wide <- decision_points %>% 
+  select(subject, task, choice) %>% 
+  mutate(task = factor(task, levels = c("PD", "DO", "DE", "PO", "OD", "OE", "PE", "ED", "EO"))) %>% 
+  mutate(choice = factor(choice, levels = c("N", "E", "O", "D"))) %>% 
+  group_by(task, choice) %>% 
+  count() %>% 
+  dcast(choice ~ task, value.var = "n", fill = 0)
+
+decisions_wide_task <- decision_points %>% 
+  select(subject, task, choice) %>% 
+  mutate(task = factor(task, levels = c("PD", "DO", "DE", "PO", "OD", "OE", "PE", "ED", "EO"))) %>% 
+  mutate(choice = factor(choice, levels = c("N", "E", "O", "D"))) %>% 
+  group_by(task, choice) %>% 
+  count() %>% 
+  dcast(task ~ choice, value.var = "n", fill = 0)
+
+choice_d <- c(30,18,14,10,22,0,2,12,0)
+choice_o <- c(0,9,0,18,8,15,0,0,23)
+choice_e <- c(0,0,16,1,0,15,25,18,7)
+task_choice <- as.data.frame(rbind(choice_d, choice_o, choice_e))
+names(task_choice) <- c("PD", "DO", "DE", "PO", "OD", "OE", "PE", "ED", "EO")
+
+task_pd <- c(0,0,30)
+task_po <- c(1,18,10)
+task_pe <- c(25,0,2)
+task_do <- c(0,9,18)
+task_de <- c(16,0,14)
+task_od <- c(0,8,22)
+task_oe <- c(15,15,0)
+task_ed <- c(18,0,12)
+task_eo <- c(7,23,0)
+task_choice <- as.data.frame(rbind(task_pd, task_po, task_pe, task_do, task_de, task_od, task_oe, task_ed, task_eo))
+names(task_choice) <- c("E", "O", "D")
+
+task_choice
+
+chisq.test(task_choice)
+```
+
+### Scenario vs Choices
+
+```{r}
+scenario_choices_wide <- decision_points %>% 
+  select(subject, task, choice) %>% 
+  mutate(task = factor(task, levels = c("PD", "DO", "DE", "PO", "OD", "OE", "PE", "ED", "EO"))) %>% 
+  mutate(choice = factor(choice, levels = c("N", "E", "O", "D"))) %>% 
+  mutate(scenario = case_when(task == "PD" ~ "Regular Day",
+                              task == "OD" ~ "Regular Day",
+                              task == "ED" ~ "Regular Day",
+                              task == "PO" ~ "In a hurry",
+                              task == "DO" ~ "In a hurry",
+                              task == "EO" ~ "In a hurry",
+                              task == "PE" ~ "Lots of time",
+                              task == "DE" ~ "Lots of time",
+                              task == "OE" ~ "Lots of time")) %>% 
+  group_by(scenario, choice) %>% 
+  count() %>% 
+  dcast(scenario ~ choice, value.var = "n", fill = 0)
+
+scene_d <- c(18,8,64)
+scene_o <- c(8,50,28)
+scene_e <- c(56,15,16)
+scenario_choice <- as.data.frame(rbind(scene_d, scene_o, scene_e))
+names(scenario_choice) <- c("E", "O", "D")
+
+chisq.test(scenario_choice)
+
+decision_points %>% 
+  select(subject, task, choice) %>% 
+  mutate(task = factor(task, levels = c("PD", "DO", "DE", "PO", "OD", "OE", "PE", "ED", "EO"))) %>% 
+  mutate(choice = factor(choice, levels = c("N", "E", "O", "D"))) %>% 
+  mutate(scenario = case_when(task == "PD" ~ "Regular Day",
+                              task == "OD" ~ "Regular Day",
+                              task == "ED" ~ "Regular Day",
+                              task == "PO" ~ "In a hurry",
+                              task == "DO" ~ "In a hurry",
+                              task == "EO" ~ "In a hurry",
+                              task == "PE" ~ "Lots of time",
+                              task == "DE" ~ "Lots of time",
+                              task == "OE" ~ "Lots of time")) %>% 
+  group_by(scenario, choice) %>% 
+  ggplot(aes(x = choice)) +
+  geom_bar(alpha = 0.8) +
+  aes(fill = choice) +
+  scale_fill_brewer(palette = "Set2", guide = FALSE) + 
+  coord_flip() +
+  facet_wrap(~scenario) +
+  labs(title = "Choice per Scenario",
+       x = "",
+       y = "") +
+  theme_tufte(base_family = "Avenir", ticks = TRUE)
+```
+
 
 ## RQ2: Confidence and Trust
 
