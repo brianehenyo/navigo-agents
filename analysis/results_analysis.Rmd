@@ -721,7 +721,30 @@ decision_points %>%
   left_join(post_choices) %>% 
   select(choice, confidence) %>% 
   group_by(choice, confidence) %>% 
-  count()
+  count() %>% 
+  dcast(confidence ~ choice, value.var = "n", fill = 0) %>% 
+  select(confidence, D, O, E)
+
+choice_d <- c(2,4,5,16,17,19,45)
+choice_o <- c(2,5,5,8,26,20,16)
+choice_e <- c(0,4,2,9,8,20,30)
+
+conf_1 <- c(2,0,2)
+conf_2 <- c(4,4,5)
+conf_3 <- c(5,2,5)
+conf_4 <- c(16,9,8)
+conf_5 <- c(17,8,26)
+conf_6 <- c(19,20,20)
+conf_7 <- c(45,30,16)
+# choice_confidence <- as.data.frame(rbind(choice_d, choice_o, choice_e))
+# names(choice_confidence) <- c("1", "2", "3", "4", "5", "6", "7")
+# row.names(choice_confidence) <- c("Driver", "Explorer", "Optimal")
+choice_confidence <- as.data.frame(rbind(conf_1, conf_2, conf_3, conf_4, conf_5, conf_6, conf_7))
+names(choice_confidence) <- c("Driver", "Optimal", "Explorer")
+row.names(choice_confidence) <- c("1", "2", "3", "4", "5", "6", "7")
+
+choice_confidence_chisq <- chisq.test(choice_confidence)
+corrplot(choice_confidence_chisq$residuals, is.cor = FALSE)
 
 decision_points %>% 
   left_join(post_choices) %>% 
