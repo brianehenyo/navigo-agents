@@ -15,7 +15,7 @@ decision_points <- read.csv("../results/decision_points.csv", stringsAsFactors =
 post_trial <- read.csv("../results/post_trial.csv", stringsAsFactors = FALSE)
 ```
 
-## RQ1.a: Workload - NASA TLX
+## RQ1.b: Workload - NASA TLX
 
 ### Pure Conditions
 
@@ -35,6 +35,8 @@ nasa_tlx %>%
        x = "",
        y = "NASA TLX Score") +
   theme_tufte(base_family = "Avenir", ticks = FALSE)
+
+ggsave("../outputs/pure_tlx.png", width=8, height=5)
 ```
 
 *PD Condition*
@@ -200,6 +202,8 @@ nasa_tlx %>%
        x = "",
        y = "NASA TLX Score") +
   theme_tufte(base_family = "Avenir", ticks = FALSE)
+
+ggsave("../outputs/d_factorial_tlx.png", width=10, height=5)
 ```
 
 #### Paired t-test
@@ -220,6 +224,11 @@ t.test(nasa_tlx$do.total, nasa_tlx$pd.total, paired = TRUE, alternative = "great
 t.test(nasa_tlx$de.total, nasa_tlx$pd.total, paired = TRUE, alternative = "greater")
 t.test(nasa_tlx$od.total, nasa_tlx$pd.total, paired = TRUE, alternative = "greater")
 t.test(nasa_tlx$ed.total, nasa_tlx$pd.total, paired = TRUE, alternative = "greater")
+
+1.739e-07 < 0.001
+0.01306 < 0.05
+0.0004981 < 0.001
+2.89e-05 < 0.001
 ```
 
 ### Explorer Conditions
@@ -238,6 +247,8 @@ nasa_tlx %>%
        x = "",
        y = "NASA TLX Score") +
   theme_tufte(base_family = "Avenir", ticks = FALSE)
+
+ggsave("../outputs/e_factorial_tlx.png", width=8, height=5)
 ```
 
 #### Paired t-test
@@ -282,6 +293,8 @@ nasa_tlx %>%
        x = "",
        y = "NASA TLX Score") +
   theme_tufte(base_family = "Avenir", ticks = FALSE)
+
+ggsave("../outputs/o_factorial_tlx.png", width=8, height=5)
 ```
 
 #### Paired t-test
@@ -311,14 +324,14 @@ t.test(nasa_tlx$do.total, nasa_tlx$po.total, paired = TRUE, alternative = "great
 wilcox.test(nasa_tlx$eo.total, nasa_tlx$po.total, paired = TRUE, alternative = "greater")
 ```
 
-## RQ1.b: Deviations
+## RQ1.c: Deviations
 
 ### Impact on Deviations
 
 ```{r}
 decision_points %>% 
   select(subject, task, devratio) %>% 
-  # filter(devratio > 0.0) %>% 
+  # filter(devs > 0) %>%
   mutate(task = factor(task, levels = c("PD", "DO", "DE", "PO", "OD", "OE", "PE", "ED", "EO"))) %>% 
   ggplot(aes(x = task, y = devratio)) +
   geom_jitter(alpha = .7, width = .25, height = 0) + 
@@ -331,7 +344,145 @@ decision_points %>%
        x = "",
        y = "Deviation Ratio") +
   theme_tufte(base_family = "Avenir", ticks = FALSE)
+
+# ggsave("../outputs/devratio_per_condition_nozero.png", width=8, height=5)
 ```
+
+
+
+*Shapiro-Wilk's Normality Test*
+
+```{r}
+devratio_wide <- decision_points %>% 
+  select(subject, task, devratio) %>% 
+  dcast(subject ~ task, value.var = "devratio")
+
+hist(devratio_wide$PD, col="red", xlim=c(0,1), prob=TRUE)
+x <- seq(0,1,0.1)
+curve(dnorm(x,mean=mean(devratio_wide$PD), sd=sd(devratio_wide$PD)), 0, 1, col="blue", add=TRUE)
+stat.desc(devratio_wide$PD)
+shapiro.test(devratio_wide$PD)
+```
+
+_PO_
+
+```{r}
+hist(devratio_wide$PO, col="red", xlim=c(0,1), prob=TRUE)
+x <- seq(0,1,0.1)
+curve(dnorm(x,mean=mean(devratio_wide$PO), sd=sd(devratio_wide$PO)), 0, 1, col="blue", add=TRUE)
+stat.desc(devratio_wide$PO)
+shapiro.test(devratio_wide$PO)
+```
+
+_PE_
+
+```{r}
+hist(devratio_wide$PE, col="red", xlim=c(0,1), prob=TRUE)
+x <- seq(0,1,0.1)
+curve(dnorm(x,mean=mean(devratio_wide$PE), sd=sd(devratio_wide$PE)), 0, 1, col="blue", add=TRUE)
+stat.desc(devratio_wide$PE)
+shapiro.test(devratio_wide$PE)
+```
+
+_DO_
+
+```{r}
+hist(devratio_wide$DO, col="red", xlim=c(0,1), prob=TRUE)
+x <- seq(0,1,0.1)
+curve(dnorm(x,mean=mean(devratio_wide$DO), sd=sd(devratio_wide$DO)), 0, 1, col="blue", add=TRUE)
+stat.desc(devratio_wide$DO)
+shapiro.test(devratio_wide$DO)
+```
+
+_DE_
+
+```{r}
+hist(devratio_wide$DE, col="red", xlim=c(0,1), prob=TRUE)
+x <- seq(0,1,0.1)
+curve(dnorm(x,mean=mean(devratio_wide$DE), sd=sd(devratio_wide$DE)), 0, 1, col="blue", add=TRUE)
+stat.desc(devratio_wide$DE)
+shapiro.test(devratio_wide$DE)
+```
+
+_OD_
+
+```{r}
+hist(devratio_wide$OD, col="red", xlim=c(0,1), prob=TRUE)
+x <- seq(0,1,0.1)
+curve(dnorm(x,mean=mean(devratio_wide$OD), sd=sd(devratio_wide$OD)), 0, 1, col="blue", add=TRUE)
+stat.desc(devratio_wide$OD)
+shapiro.test(devratio_wide$OD)
+```
+
+_OE_
+
+```{r}
+hist(devratio_wide$OE, col="red", xlim=c(0,1), prob=TRUE)
+x <- seq(0,1,0.1)
+curve(dnorm(x,mean=mean(devratio_wide$OE), sd=sd(devratio_wide$OE)), 0, 1, col="blue", add=TRUE)
+stat.desc(devratio_wide$OE)
+shapiro.test(devratio_wide$OE)
+```
+
+_ED_
+
+```{r}
+hist(devratio_wide$ED, col="red", xlim=c(0,1), prob=TRUE)
+x <- seq(0,1,0.1)
+curve(dnorm(x,mean=mean(devratio_wide$ED), sd=sd(devratio_wide$ED)), 0, 1, col="blue", add=TRUE)
+stat.desc(devratio_wide$ED)
+shapiro.test(devratio_wide$ED)
+```
+
+_EO_
+
+```{r}
+hist(devratio_wide$EO, col="red", xlim=c(0,1), prob=TRUE)
+x <- seq(0,1,0.1)
+curve(dnorm(x,mean=mean(devratio_wide$EO), sd=sd(devratio_wide$EO)), 0, 1, col="blue", add=TRUE)
+stat.desc(devratio_wide$EO)
+shapiro.test(devratio_wide$EO)
+```
+
+*Fisher's F Test*
+
+```{r}
+var.test(devratio_wide$PD, devratio_wide$PO)
+var.test(devratio_wide$PD, devratio_wide$PE)
+var.test(devratio_wide$PO, devratio_wide$PE)
+var.test(devratio_wide$PD, devratio_wide$DO)
+var.test(devratio_wide$PD, devratio_wide$DE)
+var.test(devratio_wide$PD, devratio_wide$OD)
+var.test(devratio_wide$PD, devratio_wide$ED)
+var.test(devratio_wide$PO, devratio_wide$OD)
+var.test(devratio_wide$PO, devratio_wide$OE)
+var.test(devratio_wide$PO, devratio_wide$DO)
+var.test(devratio_wide$PO, devratio_wide$EO)
+var.test(devratio_wide$PE, devratio_wide$ED)
+var.test(devratio_wide$PE, devratio_wide$EO)
+var.test(devratio_wide$PE, devratio_wide$DE)
+var.test(devratio_wide$PE, devratio_wide$OE)
+```
+
+*Wilcoxon Test*
+
+```{r}
+wilcox.test(devratio_wide$PD, devratio_wide$DO, paired = TRUE, alternative = "greater")
+wilcox.test(devratio_wide$PD, devratio_wide$DE, paired = TRUE, alternative = "greater")
+wilcox.test(devratio_wide$PD, devratio_wide$OD, paired = TRUE, alternative = "greater")
+wilcox.test(devratio_wide$PD, devratio_wide$ED, paired = TRUE, alternative = "greater")
+wilcox.test(devratio_wide$PO, devratio_wide$OD, paired = TRUE, alternative = "greater")
+wilcox.test(devratio_wide$PO, devratio_wide$OE, paired = TRUE, alternative = "greater")
+wilcox.test(devratio_wide$PO, devratio_wide$DO, paired = TRUE, alternative = "greater")
+wilcox.test(devratio_wide$PO, devratio_wide$EO, paired = TRUE, alternative = "greater")
+wilcox.test(devratio_wide$PE, devratio_wide$ED, paired = TRUE, alternative = "greater")
+wilcox.test(devratio_wide$PE, devratio_wide$EO, paired = TRUE, alternative = "greater")
+wilcox.test(devratio_wide$PE, devratio_wide$DE, paired = TRUE, alternative = "greater")
+wilcox.test(devratio_wide$PE, devratio_wide$OE, paired = TRUE, alternative = "greater")
+wilcox.test(devratio_wide$DO, devratio_wide$PO, paired = TRUE, alternative = "less")
+wilcox.test(devratio_wide$OD, devratio_wide$PO, paired = TRUE, alternative = "less")
+```
+
 
 ```{r}
 decision_points %>% 
@@ -351,7 +502,7 @@ decision_points %>%
   theme_tufte(base_family = "Avenir", ticks = FALSE)
 ```
 
-## RQ1.c Impact on Choices
+## RQ1.a Impact on Choices
 
 ### Histogram of Choices
 
@@ -410,11 +561,11 @@ task_oe <- c(15,15,0)
 task_ed <- c(18,0,12)
 task_eo <- c(7,23,0)
 task_choice <- as.data.frame(rbind(task_pd, task_po, task_pe, task_do, task_de, task_od, task_oe, task_ed, task_eo))
-names(task_choice) <- c("E", "O", "D")
+names(task_choice) <- c("Explorer", "Optimal", "Driver")
+row.names(task_choice) <- c("PD", "PO", "PE", "DO", "DE", "OD", "OE", "ED", "EO")
 
-task_choice
-
-chisq.test(task_choice)
+task_choice_chisq <- chisq.test(task_choice)
+corrplot(task_choice_chisq$residuals, is.cor = FALSE)
 ```
 
 ### Scenario vs Choices
@@ -441,9 +592,11 @@ scene_d <- c(18,8,64)
 scene_o <- c(8,50,28)
 scene_e <- c(56,15,16)
 scenario_choice <- as.data.frame(rbind(scene_d, scene_o, scene_e))
-names(scenario_choice) <- c("E", "O", "D")
+names(scenario_choice) <- c("Explorer", "Optimal", "Driver")
+row.names(scenario_choice) <- c("Regular Day", "In a hurry", "Lots of time")
 
-chisq.test(scenario_choice)
+scenario_choice_chisq <- chisq.test(scenario_choice)
+corrplot(scenario_choice_chisq$residuals, is.cor = FALSE)
 
 decision_points %>% 
   select(subject, task, choice) %>% 
@@ -469,6 +622,8 @@ decision_points %>%
        x = "",
        y = "") +
   theme_tufte(base_family = "Avenir", ticks = TRUE)
+
+ggsave("../outputs/choice_per_scenario.png", width=8, height=5)
 ```
 
 
