@@ -331,7 +331,7 @@ wilcox.test(nasa_tlx$eo.total, nasa_tlx$po.total, paired = TRUE, alternative = "
 ```{r}
 decision_points %>% 
   select(subject, task, devratio) %>% 
-  # filter(devs > 0) %>%
+  filter(devratio > 0) %>%
   mutate(task = factor(task, levels = c("PD", "DO", "DE", "PO", "OD", "OE", "PE", "ED", "EO"))) %>% 
   ggplot(aes(x = task, y = devratio)) +
   geom_jitter(alpha = .7, width = .25, height = 0) + 
@@ -348,6 +348,25 @@ decision_points %>%
 # ggsave("../outputs/devratio_per_condition_nozero.png", width=8, height=5)
 ```
 
+Count number of participants that deviated per condition
+
+```{r}
+decision_points %>% 
+  select(subject, task, devs) %>% 
+  filter(devs > 0) %>% 
+  group_by(task) %>% 
+  count()
+```
+
+Count number of deviations per subject
+
+```{r}
+decision_points %>% 
+  select(subject, task, devs) %>% 
+  filter(devs > 0) %>% 
+  group_by(subject) %>% 
+  count()
+```
 
 
 *Shapiro-Wilk's Normality Test*
@@ -647,14 +666,23 @@ post_trial %>%
 *Shapiro-Wilk's Test*
 
 ```{r}
+stat.desc(post_trial$pd.conf)
 shapiro.test(post_trial$pd.conf)
+stat.desc(post_trial$po.conf)
 shapiro.test(post_trial$po.conf)
+stat.desc(post_trial$pe.conf)
 shapiro.test(post_trial$pe.conf)
+stat.desc(post_trial$od.conf)
 shapiro.test(post_trial$od.conf)
+stat.desc(post_trial$oe.conf)
 shapiro.test(post_trial$oe.conf)
+stat.desc(post_trial$do.conf)
 shapiro.test(post_trial$do.conf)
+stat.desc(post_trial$de.conf)
 shapiro.test(post_trial$de.conf)
+stat.desc(post_trial$ed.conf)
 shapiro.test(post_trial$ed.conf)
+stat.desc(post_trial$eo.conf)
 shapiro.test(post_trial$eo.conf)
 ```
 
@@ -668,6 +696,45 @@ wilcox.test(post_trial$eo.conf, post_trial$po.conf, paired = TRUE)
 wilcox.test(post_trial$de.conf, post_trial$pe.conf, paired = TRUE)
 wilcox.test(post_trial$oe.conf, post_trial$pe.conf, paired = TRUE)
 ```
+
+*Confidence vs Choice*
+
+```{r}
+post_choices <- post_trial %>% 
+  mutate(pd = pd.conf, po = po.conf, pe = pe.conf, do = do.conf, de = de.conf, od = od.conf, oe = oe.conf, ed = ed.conf, eo = eo.conf) %>% 
+  select(subject, pd, do, de, po, od, oe, pe, ed, eo) %>% 
+  melt(id("subject")) %>% 
+  mutate(task = variable) %>% 
+  mutate(confidence = value) %>% 
+  select(subject, task, confidence) %>% 
+  mutate(task = case_when(task == "pd" ~ "PD",
+                          task == "po" ~ "PO",
+                          task == "pe" ~ "PE",
+                          task == "do" ~ "DO",
+                          task == "de" ~ "DE",
+                          task == "od" ~ "OD",
+                          task == "oe" ~ "OE",
+                          task == "ed" ~ "ED",
+                          task == "eo" ~ "EO"))
+
+decision_points %>% 
+  left_join(post_choices) %>% 
+  select(choice, confidence) %>% 
+  group_by(choice, confidence) %>% 
+  count()
+
+decision_points %>% 
+  left_join(post_choices) %>% 
+  select(choice, confidence) %>% 
+  ggplot(aes(x = confidence)) +
+  geom_bar() +
+  aes(fill = choice) + 
+  scale_fill_viridis_d(guide = FALSE) + 
+  facet_wrap(~choice) +
+  coord_flip() +
+  theme_tufte(base_family = "Avenir", ticks = FALSE)
+```
+
 
 ### Trust
 
@@ -688,6 +755,7 @@ post_trial %>%
 *Wilcoxon Signed-rank test*
 
 ```{r}
+stat.desc(post_trial$pd.conf)
 wilcox.test(post_trial$od.trust, post_trial$pd.trust, paired = TRUE)
 wilcox.test(post_trial$ed.trust, post_trial$pd.trust, paired = TRUE)
 wilcox.test(post_trial$do.trust, post_trial$po.trust, paired = TRUE)
@@ -695,6 +763,23 @@ wilcox.test(post_trial$eo.trust, post_trial$po.trust, paired = TRUE)
 wilcox.test(post_trial$de.trust, post_trial$pe.trust, paired = TRUE)
 wilcox.test(post_trial$oe.trust, post_trial$pe.trust, paired = TRUE)
 ```
+
+*Correlation between Confidence and Trust*
+
+```{r}
+ggscatter(post_trial, x = "pd.conf", y = "pd.trust", 
+          add = "reg.line",
+          conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Confidence", ylab = "Trust")
+```
+
+```{r}
+ggscatter(post_trial, x = "po.conf", y = "po.trust", 
+          add = "reg.line",
+          conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Confidence", ylab = "Trust")
+```
+
 
 ## RQ3: Detect Conversations
 
