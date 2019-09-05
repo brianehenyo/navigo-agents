@@ -642,7 +642,7 @@ decision_points %>%
        y = "") +
   theme_tufte(base_family = "Avenir", ticks = TRUE)
 
-ggsave("../outputs/choice_per_scenario.png", width=8, height=5)
+# ggsave("../outputs/choice_per_scenario.png", width=8, height=5)
 ```
 
 
@@ -651,6 +651,13 @@ ggsave("../outputs/choice_per_scenario.png", width=8, height=5)
 ### Confidence
 
 ```{r}
+conf_freq_condition <- post_trial %>% 
+  mutate(pd = pd.conf, po = po.conf, pe = pe.conf, do = do.conf, de = de.conf, od = od.conf, oe = oe.conf, ed = ed.conf, eo = eo.conf) %>% 
+  select(subject, pd, do, de, po, od, oe, pe, ed, eo) %>%
+  melt(id("subject")) %>% 
+  group_by(variable, value) %>% 
+  count()
+
 post_trial %>% 
   mutate(pd = pd.conf, po = po.conf, pe = pe.conf, do = do.conf, de = de.conf, od = od.conf, oe = oe.conf, ed = ed.conf, eo = eo.conf) %>% 
   select(subject, pd, do, de, po, od, oe, pe, ed, eo) %>% 
@@ -661,6 +668,8 @@ post_trial %>%
   scale_fill_viridis_d(guide = FALSE) + 
   facet_wrap(~variable) +
   theme_tufte(base_family = "Avenir", ticks = FALSE)
+
+# ggsave("../outputs/confidence_per_condition.png", width=8, height=5)
 ```
 
 *Shapiro-Wilk's Test*
@@ -748,6 +757,16 @@ corrplot(choice_confidence_chisq$residuals, is.cor = FALSE)
 
 decision_points %>% 
   left_join(post_choices) %>% 
+  mutate(scenario = case_when(task == "PD" ~ "Regular Day",
+                              task == "OD" ~ "Regular Day",
+                              task == "ED" ~ "Regular Day",
+                              task == "PO" ~ "In a hurry",
+                              task == "DO" ~ "In a hurry",
+                              task == "EO" ~ "In a hurry",
+                              task == "PE" ~ "Lots of time",
+                              task == "DE" ~ "Lots of time",
+                              task == "OE" ~ "Lots of time")) %>% 
+  filter(scenario == "Regular Day") %>% 
   select(choice, confidence) %>% 
   ggplot(aes(x = confidence)) +
   geom_bar() +
