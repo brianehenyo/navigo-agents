@@ -766,8 +766,10 @@ decision_points %>%
                               task == "PE" ~ "Lots of time",
                               task == "DE" ~ "Lots of time",
                               task == "OE" ~ "Lots of time")) %>% 
-  filter(scenario == "Regular Day") %>% 
+  filter(scenario == "Lots of time") %>% 
   select(choice, confidence) %>% 
+  group_by(choice) %>% 
+  summarise(mean = mean(confidence), median = median(confidence))
   ggplot(aes(x = confidence)) +
   geom_bar() +
   aes(fill = choice) + 
