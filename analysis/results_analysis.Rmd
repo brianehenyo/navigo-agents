@@ -765,11 +765,13 @@ decision_points %>%
                               task == "EO" ~ "In a hurry",
                               task == "PE" ~ "Lots of time",
                               task == "DE" ~ "Lots of time",
-                              task == "OE" ~ "Lots of time")) %>% 
-  filter(scenario == "Lots of time") %>% 
-  select(choice, confidence) %>% 
-  group_by(choice) %>% 
-  summarise(mean = mean(confidence), median = median(confidence))
+                              task == "OE" ~ "Lots of time")) %>%
+  # filter(scenario == "Lots of time") %>%
+  select(choice, confidence) %>%
+  # group_by(choice) %>%
+  # summarise(mean = mean(confidence), 
+  #           median = median(confidence),
+  #           stdev = sd(confidence))
   ggplot(aes(x = confidence)) +
   geom_bar() +
   aes(fill = choice) + 
