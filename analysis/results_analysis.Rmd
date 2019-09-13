@@ -803,7 +803,15 @@ post_trial %>%
 *Wilcoxon Signed-rank test*
 
 ```{r}
-stat.desc(post_trial$pd.conf)
+stat.desc(post_trial$pd.trust)
+stat.desc(post_trial$po.trust)
+stat.desc(post_trial$pe.trust)
+stat.desc(post_trial$od.trust)
+stat.desc(post_trial$ed.trust)
+stat.desc(post_trial$do.trust)
+stat.desc(post_trial$eo.trust)
+stat.desc(post_trial$de.trust)
+stat.desc(post_trial$oe.trust)
 wilcox.test(post_trial$od.trust, post_trial$pd.trust, paired = TRUE)
 wilcox.test(post_trial$ed.trust, post_trial$pd.trust, paired = TRUE)
 wilcox.test(post_trial$do.trust, post_trial$po.trust, paired = TRUE)
@@ -952,6 +960,46 @@ decision_points %>%
   left_join(familiarization) %>% 
   filter(subject > 3) %>% 
   filter(task == 'PD' | agent2 == 'D') %>% 
+  select(subject, choice, f.good) %>% 
+  count(subject, choice, f.good) %>% 
+  mutate(ratio_choice = ceiling((n/3)*100)) %>% 
+  group_by(f.good, choice) %>% 
+  summarize(mean_ratio_choice = mean(ratio_choice, na.rm = TRUE)) %>% 
+  ggplot(aes(x = choice, y = mean_ratio_choice)) +
+  geom_col() +
+  aes(fill = choice) +
+  scale_fill_viridis_d(guide = FALSE) +
+  facet_wrap(~f.good) +
+  theme_tufte(base_family = "Avenir", ticks = FALSE)
+```
+
+### Conditions with O scenarios
+
+```{r}
+decision_points %>% 
+  left_join(familiarization) %>% 
+  filter(subject > 3) %>% 
+  filter(task == 'PO' | agent2 == 'O') %>% 
+  select(subject, choice, f.good) %>% 
+  count(subject, choice, f.good) %>% 
+  mutate(ratio_choice = ceiling((n/3)*100)) %>% 
+  group_by(f.good, choice) %>% 
+  summarize(mean_ratio_choice = mean(ratio_choice, na.rm = TRUE)) %>% 
+  ggplot(aes(x = choice, y = mean_ratio_choice)) +
+  geom_col() +
+  aes(fill = choice) +
+  scale_fill_viridis_d(guide = FALSE) +
+  facet_wrap(~f.good) +
+  theme_tufte(base_family = "Avenir", ticks = FALSE)
+```
+
+### Conditions with E scenarios
+
+```{r}
+decision_points %>% 
+  left_join(familiarization) %>% 
+  filter(subject > 3) %>% 
+  filter(task == 'PE' | agent2 == 'E') %>% 
   select(subject, choice, f.good) %>% 
   count(subject, choice, f.good) %>% 
   mutate(ratio_choice = ceiling((n/3)*100)) %>% 
