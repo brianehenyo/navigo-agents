@@ -787,6 +787,14 @@ task_choice_conf_count <- decision_points %>%
 ### Trust
 
 ```{r}
+trust_count <- post_trial %>% 
+  mutate(pd = pd.trust, po = po.trust, pe = pe.trust, do = do.trust, de = de.trust, 
+         od = od.trust, oe = oe.trust, ed = ed.trust, eo = eo.trust) %>% 
+  select(subject, pd, do, de, po, od, oe, pe, ed, eo) %>% 
+  melt(id("subject")) %>% 
+  group_by(variable, value) %>% 
+  count()
+
 post_trial %>% 
   mutate(pd = pd.trust, po = po.trust, pe = pe.trust, do = do.trust, de = de.trust, 
          od = od.trust, oe = oe.trust, ed = ed.trust, eo = eo.trust) %>% 
@@ -812,13 +820,15 @@ stat.desc(post_trial$do.trust)
 stat.desc(post_trial$eo.trust)
 stat.desc(post_trial$de.trust)
 stat.desc(post_trial$oe.trust)
-wilcox.test(post_trial$od.trust, post_trial$pd.trust, paired = TRUE)
-wilcox.test(post_trial$ed.trust, post_trial$pd.trust, paired = TRUE)
-wilcox.test(post_trial$do.trust, post_trial$po.trust, paired = TRUE)
-wilcox.test(post_trial$eo.trust, post_trial$po.trust, paired = TRUE)
-wilcox.test(post_trial$de.trust, post_trial$pe.trust, paired = TRUE)
-wilcox.test(post_trial$oe.trust, post_trial$pe.trust, paired = TRUE)
+wilcox.test(post_trial$od.trust, post_trial$pd.trust, paired = TRUE, alternative = "less")
+wilcox.test(post_trial$ed.trust, post_trial$pd.trust, paired = TRUE, alternative = "less")
+wilcox.test(post_trial$do.trust, post_trial$po.trust, paired = TRUE, alternative = "less")
+wilcox.test(post_trial$eo.trust, post_trial$po.trust, paired = TRUE, alternative = "less")
+wilcox.test(post_trial$de.trust, post_trial$pe.trust, paired = TRUE, alternative = "less")
+wilcox.test(post_trial$oe.trust, post_trial$pe.trust, paired = TRUE, alternative = "less")
 ```
+
+
 
 *Correlation between Confidence and Trust*
 
@@ -919,17 +929,24 @@ familiarization <- post_trial %>%
 
 decision_points %>% 
   left_join(familiarization) %>% 
-  select(subject, choice, f.good) %>% 
+  select(subject, task, choice, f.good) %>% 
   filter(subject > 3) %>% 
-  count(subject, choice, f.good) %>% 
+  # count(subject, choice, f.good) %>% 
+  filter(f.good < 5 & choice == 'D') %>% 
+  group_by(task) %>% 
+  count()
   mutate(ratio_choice = ceiling((n/9)*100)) %>% 
   group_by(choice, f.good) %>% 
-  summarize(mean_ratio_choice = mean(ratio_choice, na.rm = TRUE)) %>% 
-  ggplot(aes(x = f.good, y = mean_ratio_choice)) +
-  geom_col() +
-  aes(fill = choice) +
-  scale_fill_viridis_d(guide = FALSE) +
-  facet_wrap(~choice) +
+  filter(choice == 'D') %>% 
+  # summarize(mean_ratio_choice = mean(ratio_choice, na.rm = TRUE)) %>%
+  # count() %>% 
+  # ggplot(aes(x = f.good, y = n)) +
+  # geom_col() +
+  ggplot(aes(x = ratio_choice)) +
+  geom_bar() +
+  aes(fill = f.good) +
+  scale_fill_viridis_c(guide = FALSE) +
+  facet_wrap(~f.good) +
   theme_tufte(base_family = "Avenir", ticks = FALSE)
 ```
 
@@ -944,8 +961,9 @@ decision_points %>%
   count(subject, choice, f.good) %>% 
   mutate(ratio_choice = ceiling((n/5)*100)) %>% 
   group_by(f.good, choice) %>% 
-  summarize(mean_ratio_choice = mean(ratio_choice, na.rm = TRUE)) %>% 
-  ggplot(aes(x = choice, y = mean_ratio_choice)) +
+  # summarize(mean_ratio_choice = mean(ratio_choice, na.rm = TRUE)) %>% 
+  count() %>% 
+  ggplot(aes(x = choice, y = n)) +
   geom_col() +
   aes(fill = choice) +
   scale_fill_viridis_d(guide = FALSE) +
@@ -964,8 +982,9 @@ decision_points %>%
   count(subject, choice, f.good) %>% 
   mutate(ratio_choice = ceiling((n/3)*100)) %>% 
   group_by(f.good, choice) %>% 
-  summarize(mean_ratio_choice = mean(ratio_choice, na.rm = TRUE)) %>% 
-  ggplot(aes(x = choice, y = mean_ratio_choice)) +
+  # summarize(mean_ratio_choice = mean(ratio_choice, na.rm = TRUE)) %>% 
+  count() %>% 
+  ggplot(aes(x = choice, y = n)) +
   geom_col() +
   aes(fill = choice) +
   scale_fill_viridis_d(guide = FALSE) +
@@ -979,13 +998,16 @@ decision_points %>%
 decision_points %>% 
   left_join(familiarization) %>% 
   filter(subject > 3) %>% 
-  filter(task == 'PO' | agent2 == 'O') %>% 
+  # filter(task == 'PO' | agent1 == 'O') %>%
+  filter(agent1 == 'D' | agent2 == 'D') %>%
+  # filter(task == 'EO') %>% 
   select(subject, choice, f.good) %>% 
   count(subject, choice, f.good) %>% 
   mutate(ratio_choice = ceiling((n/3)*100)) %>% 
   group_by(f.good, choice) %>% 
-  summarize(mean_ratio_choice = mean(ratio_choice, na.rm = TRUE)) %>% 
-  ggplot(aes(x = choice, y = mean_ratio_choice)) +
+  # summarize(mean_ratio_choice = mean(ratio_choice, na.rm = TRUE)) %>% 
+  count() %>% 
+  ggplot(aes(x = choice, y = n)) +
   geom_col() +
   aes(fill = choice) +
   scale_fill_viridis_d(guide = FALSE) +
@@ -1004,8 +1026,9 @@ decision_points %>%
   count(subject, choice, f.good) %>% 
   mutate(ratio_choice = ceiling((n/3)*100)) %>% 
   group_by(f.good, choice) %>% 
-  summarize(mean_ratio_choice = mean(ratio_choice, na.rm = TRUE)) %>% 
-  ggplot(aes(x = choice, y = mean_ratio_choice)) +
+  # summarize(mean_ratio_choice = mean(ratio_choice, na.rm = TRUE)) %>% 
+  count() %>% 
+  ggplot(aes(x = choice, y = n)) +
   geom_col() +
   aes(fill = choice) +
   scale_fill_viridis_d(guide = FALSE) +
@@ -1013,4 +1036,14 @@ decision_points %>%
   theme_tufte(base_family = "Avenir", ticks = FALSE)
 ```
 
+## Nationality
+
+```{r}
+country_choice <- post_trial %>% 
+  select(subject, country) %>% 
+  left_join(decision_points) %>% 
+  select(subject, country, task, choice) %>% 
+  group_by(task, choice, country) %>% 
+  count()
+```
 
