@@ -932,7 +932,7 @@ decision_points %>%
   select(subject, task, choice, f.good) %>% 
   filter(subject > 3) %>% 
   # count(subject, choice, f.good) %>% 
-  filter(f.good < 5 & choice == 'D') %>% 
+  filter(f.good >= 5 & choice == 'N') %>% 
   group_by(task) %>% 
   count()
   mutate(ratio_choice = ceiling((n/9)*100)) %>% 
@@ -949,6 +949,26 @@ decision_points %>%
   facet_wrap(~f.good) +
   theme_tufte(base_family = "Avenir", ticks = FALSE)
 ```
+
+### Chi-square
+```{r}
+fam_good <- c(85,57,60)
+fam_bad <- c(11,10,14)
+fam_choice <- as.data.frame(rbind(fam_good, fam_bad))
+names(fam_choice) <- c("Driver", "Optimal", "Explorer")
+row.names(fam_choice) <- c("Good", "Bad")
+
+fam_d <- c(85,11)
+fam_o <- c(57,10)
+fam_e <- c(60,14)
+fam_choice <- as.data.frame(rbind(fam_d, fam_o, fam_e))
+names(fam_choice) <- c("Good", "Bad")
+row.names(fam_choice) <- c("Driver", "Optimal", "Explorer")
+
+fam_choice_chisq <- chisq.test(fam_choice)
+corrplot(fam_choice_chisq$residuals, is.cor = FALSE)
+```
+
 
 ### Only conditions with D
 
@@ -1044,6 +1064,50 @@ country_choice <- post_trial %>%
   left_join(decision_points) %>% 
   select(subject, country, task, choice) %>% 
   group_by(task, choice, country) %>% 
-  count()
+  count() %>% 
+  dcast(task + choice ~ country, value.var = "n", fill = 0)
+
+post_trial %>% 
+  select(subject, country) %>% 
+  left_join(decision_points) %>% 
+  select(subject, country, task, choice) %>% 
+  group_by(choice, country) %>% 
+  count() %>% 
+  dcast(choice ~ country, value.var = "n", fill = 0)
+
+post_trial %>% 
+  select(subject, country) %>% 
+  left_join(decision_points) %>% 
+  select(subject, country, task, choice) %>% 
+  group_by(subject, country, choice) %>% 
+  count() %>% 
+  mutate(ratio = (n/9)*100) %>% 
+  group_by(country, choice) %>% 
+  summarise(mean_ratio = mean(ratio))
+```
+
+### Chi-square
+```{r}
+country_JP <- c(62, 40, 50)
+country_PH <- c(46, 33, 32)
+country_choice <- as.data.frame(rbind(country_JP, country_PH))
+names(country_choice) <- c("Driver", "Optimal", "Explorer")
+row.names(country_choice) <- c("Japan", "Philippines")
+
+country_choice_chisq <- chisq.test(country_choice)
+corrplot(country_choice_chisq$residuals, is.cor = FALSE)
+```
+
+## Comments on Why the decision
+
+```{r}
+choice_why <- spost_trial %>% 
+  mutate(PD = pd.why, PO = po.why, PE = pe.why, DO = do.why, DE = de.why, 
+         OD = od.why, OE = oe.why, ED = ed.why, EO = eo.why) %>% 
+  select(subject, PD, DO, DE, PO, OD, OE, PE, ED, EO) %>% 
+  melt(id("subject")) %>% 
+  mutate(task = variable, why = value) %>% 
+  select(-variable, -value) %>% 
+  left_join(decision_points, )
 ```
 
