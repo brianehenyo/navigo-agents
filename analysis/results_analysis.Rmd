@@ -1101,13 +1101,21 @@ corrplot(country_choice_chisq$residuals, is.cor = FALSE)
 ## Comments on Why the decision
 
 ```{r}
-choice_why <- spost_trial %>% 
+choice_why <- post_trial %>% 
   mutate(PD = pd.why, PO = po.why, PE = pe.why, DO = do.why, DE = de.why, 
          OD = od.why, OE = oe.why, ED = ed.why, EO = eo.why) %>% 
   select(subject, PD, DO, DE, PO, OD, OE, PE, ED, EO) %>% 
   melt(id("subject")) %>% 
   mutate(task = variable, why = value) %>% 
   select(-variable, -value) %>% 
-  left_join(decision_points, )
+  left_join(decision_points)
+```
+
+*Filters*
+```{r}
+filtered_why <- choice_why %>% 
+  # filter(choice == 'D') %>% 
+  filter(task == 'PD' | task == 'ED' | task == 'OD') %>% 
+  select(subject, task, choice, why)
 ```
 
