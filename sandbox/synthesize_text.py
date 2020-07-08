@@ -30,28 +30,28 @@ def synthesize_text(text):
     from google.cloud import texttospeech
     client = texttospeech.TextToSpeechClient()
 
-    input_text = texttospeech.types.SynthesisInput(text=text)
+    input_text = texttospeech.SynthesisInput(text=text)
 
     # Note: the voice can also be specified by name.
     # Names of voices can be retrieved with client.list_voices().
-    voice = texttospeech.types.VoiceSelectionParams(
-        language_code='ja-JP', # JP
+    voice = texttospeech.VoiceSelectionParams(
+        # language_code='ja-JP', # JP
         # language_code='fil-PH', # PH
-        # language_code='en-US', # EN
-        name='ja-JP-Wavenet-C' # JP Driver
+        language_code='en-US', # EN
+        # name='ja-JP-Wavenet-C' # JP Driver
         # name='ja-JP-Wavenet-D' # JP Optimal
         # name='ja-JP-Wavenet-B' # JP Explorer
         # name='ja-JP-Wavenet-A' # JP Familiarization
         # name='en-US-Wavenet-A' # EN Familiarization
         # name='en-US-Wavenet-D' # EN Driver 
-        # name='en-US-Wavenet-E' # EN Optimal
+        name='en-US-Wavenet-E' # EN Optimal
         # name='en-US-Wavenet-B' # EN Explorer
         # name='fil-PH-Wavenet-A' # PH Agent
         # ssml_gender=texttospeech.enums.SsmlVoiceGender.NEUTRAL
         )
 
-    audio_config = texttospeech.types.AudioConfig(
-        audio_encoding=texttospeech.enums.AudioEncoding.MP3,
+    audio_config = texttospeech.AudioConfig(
+        audio_encoding=texttospeech.AudioEncoding.MP3,
         effects_profile_id=['handset-class-device']
         # ,pitch=3.6      # PH Driver
         # ,pitch=-3.20    # PH Optimal
@@ -60,10 +60,10 @@ def synthesize_text(text):
         # ,speaking_rate=1.20
         )
 
-    response = client.synthesize_speech(input_text, voice, audio_config)
+    response = client.synthesize_speech(input=input_text, voice=voice, audio_config=audio_config)
 
     # The response's audio_content is binary.
-    fileName = 'O_D_2_2_jp.mp3'
+    fileName = 'study4/generic_straight_unselfish.mp3'
     with open(fileName, 'wb') as out:
         out.write(response.audio_content)
         print('Audio content written to file ', fileName)

@@ -189,21 +189,22 @@ shapiro.test(nasa_tlx$eo.total)
 
 ```{r}
 nasa_tlx %>% 
-  select(subject, pd.total, do.total, de.total, od.total, ed.total) %>% 
+  select(subject, pd.total, od.total, ed.total) %>% 
   melt(id("subject")) %>% 
   ggplot(aes(x = variable, y = value)) +
   geom_jitter(alpha = .7, width = .25, height = .25) + 
   aes(col = variable) +
   scale_color_brewer(palette = "Set2", guide = FALSE) + 
-  geom_boxplot(aes(fill = variable), colour = text_color, show.legend = FALSE, 
+  geom_boxplot(aes(fill = variable), colour = "black", show.legend = FALSE, 
                outlier.shape = NA, alpha = 0.4) +
   scale_fill_brewer(palette = "Set2", guide = FALSE) +
-  labs(title = "NASA TLX Scores for Driver conditions",
+  scale_x_discrete(labels=c("PF", "OF", "EF")) +
+  labs(title = "",
        x = "",
        y = "NASA TLX Score") +
   theme_tufte(base_family = "Avenir", ticks = FALSE)
 
-ggsave("../outputs/d_factorial_tlx.png", width=10, height=5)
+ggsave("../outputs/f_factorial_tlx.png", width=8, height=3)
 ```
 
 #### Paired t-test
@@ -235,20 +236,22 @@ t.test(nasa_tlx$ed.total, nasa_tlx$pd.total, paired = TRUE, alternative = "great
 
 ```{r}
 nasa_tlx %>% 
-  select(subject, pe.total, ed.total, eo.total, de.total, oe.total) %>% 
+  select(subject, pe.total, de.total, oe.total) %>% 
   melt(id("subject")) %>% 
   ggplot(aes(x = variable, y = value)) +
   geom_jitter(alpha = .7, width = .25, height = .25) + 
   aes(col = variable) +
-  scale_color_discrete(guide = FALSE) + 
-  geom_boxplot(aes(fill = variable), colour = text_color, show.legend = FALSE, 
+  scale_color_brewer(palette = "Set1", guide = FALSE) + 
+  geom_boxplot(aes(fill = variable), colour = "black", show.legend = FALSE, 
                outlier.shape = NA, alpha = 0.4) +
-  labs(title = "NASA TLX Scores for Explorer conditions",
+  scale_fill_brewer(palette = "Set1", guide = FALSE) +
+  scale_x_discrete(labels=c("PE", "FE", "OE")) +
+  labs(title = "",
        x = "",
        y = "NASA TLX Score") +
   theme_tufte(base_family = "Avenir", ticks = FALSE)
 
-ggsave("../outputs/e_factorial_tlx.png", width=8, height=5)
+ggsave("../outputs/e_factorial_tlx.png", width=8, height=3)
 ```
 
 #### Paired t-test
@@ -281,20 +284,22 @@ wilcox.test(nasa_tlx$eo.total, nasa_tlx$pe.total, paired = TRUE, alternative = "
 
 ```{r}
 nasa_tlx %>% 
-  select(subject, po.total, od.total, oe.total, do.total, eo.total) %>% 
+  select(subject, po.total, do.total, eo.total) %>% 
   melt(id("subject")) %>% 
   ggplot(aes(x = variable, y = value)) +
   geom_jitter(alpha = .7, width = .25, height = .25) + 
   aes(col = variable) +
-  scale_color_discrete(guide = FALSE) + 
-  geom_boxplot(aes(fill = variable), colour = text_color, show.legend = FALSE, 
+  scale_color_brewer(palette = "Accent", guide = FALSE) + 
+  geom_boxplot(aes(fill = variable), colour = "black", show.legend = FALSE, 
                outlier.shape = NA, alpha = 0.4) +
-  labs(title = "NASA TLX Scores for Optimal conditions",
+  scale_fill_brewer(palette = "Accent", guide = FALSE) +
+  scale_x_discrete(labels=c("PO", "FO", "EO")) +
+  labs(title = "",
        x = "",
        y = "NASA TLX Score") +
   theme_tufte(base_family = "Avenir", ticks = FALSE)
 
-ggsave("../outputs/o_factorial_tlx.png", width=8, height=5)
+ggsave("../outputs/o_factorial_tlx.png", width=8, height=3)
 ```
 
 #### Paired t-test
@@ -512,7 +517,7 @@ decision_points %>%
   geom_jitter(alpha = .7, width = .25, height = 0) + 
   aes(col = choice) +
   scale_color_discrete(guide = FALSE) + 
-  geom_boxplot(aes(fill = choice), colour = text_color, show.legend = FALSE, 
+  geom_boxplot(aes(fill = choice), show.legend = FALSE, 
                outlier.shape = NA, alpha = 0.4) +
   labs(title = "Deviation Ratio per Choice",
        subtitle = "Only included drives with >0 deviations",
@@ -528,21 +533,29 @@ decision_points %>%
 ```{r}
 decision_points %>% 
   select(subject, task, choice) %>% 
-  mutate(task = factor(task, levels = c("PD", "OD", "ED", "PO", "DO", "EO", "PE", "DE", "OE"))) %>% 
-  mutate(choice = factor(choice, levels = c("N", "E", "O", "D"))) %>% 
+  mutate(task = case_when(task == "PD" ~ "PF",
+                          task == "OD" ~ "OF",
+                          task == "ED" ~ "EF",
+                          task == "DO" ~ "FO",
+                          task == "DE" ~ "FE",
+                          TRUE ~  as.character(task))) %>% 
+  mutate(task = factor(task, levels = c("PF", "OF", "EF", "PO", "FO", "EO", "PE", "FE", "OE"))) %>% 
+  mutate(choice = case_when(choice == "D" ~ "F",
+         TRUE ~  as.character(choice))) %>% 
+  mutate(choice = factor(choice, levels = c("N", "E", "O", "F"))) %>% 
   group_by(task) %>% 
   ggplot(aes(x = choice)) +
   geom_bar(alpha = 0.8) +
   aes(fill = choice) +
-  scale_fill_brewer(palette = "Set2", guide = FALSE) + 
+  scale_fill_brewer(palette = "Set1", guide = FALSE) +
   coord_flip() +
-  facet_wrap(~task) +
-  labs(title = "Choice per Condition",
+  facet_wrap(~task, ncol=3) +
+  labs(title = "",
        x = "",
-       y = "") +
+       y = "Number of participants") +
   theme_tufte(base_family = "Avenir", ticks = TRUE)
 
-ggsave("../outputs/choice_per_condition.png", width=8, height=5)
+ggsave("../outputs/choice_per_condition.png", width=8, height=4)
 ```
 
 ### Task vs Choices
@@ -550,16 +563,32 @@ ggsave("../outputs/choice_per_condition.png", width=8, height=5)
 ```{r}
 decisions_wide <- decision_points %>% 
   select(subject, task, choice) %>% 
-  mutate(task = factor(task, levels = c("PD", "DO", "DE", "PO", "OD", "OE", "PE", "ED", "EO"))) %>% 
-  mutate(choice = factor(choice, levels = c("N", "E", "O", "D"))) %>% 
+  mutate(task = case_when(task == "PD" ~ "PF",
+                          task == "OD" ~ "OF",
+                          task == "ED" ~ "EF",
+                          task == "DO" ~ "FO",
+                          task == "DE" ~ "FE",
+                          TRUE ~  as.character(task))) %>% 
+  mutate(task = factor(task, levels = c("PF", "OF", "EF", "PO", "FO", "EO", "PE", "FE", "OE"))) %>% 
+  mutate(choice = case_when(choice == "D" ~ "F",
+         TRUE ~  as.character(choice))) %>% 
+  mutate(choice = factor(choice, levels = c("N", "E", "O", "F"))) %>% 
   group_by(task, choice) %>% 
   count() %>% 
   dcast(choice ~ task, value.var = "n", fill = 0)
 
 decisions_wide_task <- decision_points %>% 
   select(subject, task, choice) %>% 
-  mutate(task = factor(task, levels = c("PD", "DO", "DE", "PO", "OD", "OE", "PE", "ED", "EO"))) %>% 
-  mutate(choice = factor(choice, levels = c("N", "E", "O", "D"))) %>% 
+  mutate(task = case_when(task == "PD" ~ "PF",
+                          task == "OD" ~ "OF",
+                          task == "ED" ~ "EF",
+                          task == "DO" ~ "FO",
+                          task == "DE" ~ "FE",
+                          TRUE ~  as.character(task))) %>% 
+  mutate(task = factor(task, levels = c("PF", "OF", "EF", "PO", "FO", "EO", "PE", "FE", "OE"))) %>% 
+  mutate(choice = case_when(choice == "D" ~ "F",
+         TRUE ~  as.character(choice))) %>% 
+  mutate(choice = factor(choice, levels = c("N", "E", "O", "F"))) %>% 
   group_by(task, choice) %>% 
   count() %>% 
   dcast(task ~ choice, value.var = "n", fill = 0)
@@ -592,16 +621,24 @@ corrplot(task_choice_chisq$residuals, is.cor = FALSE)
 ```{r}
 scenario_choices_wide <- decision_points %>% 
   select(subject, task, choice) %>% 
-  mutate(task = factor(task, levels = c("PD", "DO", "DE", "PO", "OD", "OE", "PE", "ED", "EO"))) %>% 
-  mutate(choice = factor(choice, levels = c("N", "E", "O", "D"))) %>% 
-  mutate(scenario = case_when(task == "PD" ~ "Regular Day",
-                              task == "OD" ~ "Regular Day",
-                              task == "ED" ~ "Regular Day",
+  mutate(task = case_when(task == "PD" ~ "PF",
+                          task == "OD" ~ "OF",
+                          task == "ED" ~ "EF",
+                          task == "DO" ~ "FO",
+                          task == "DE" ~ "FE",
+                          TRUE ~  as.character(task))) %>% 
+  mutate(task = factor(task, levels = c("PF", "OF", "EF", "PO", "FO", "EO", "PE", "FE", "OE"))) %>% 
+  mutate(choice = case_when(choice == "D" ~ "F",
+         TRUE ~  as.character(choice))) %>% 
+  mutate(choice = factor(choice, levels = c("N", "E", "O", "F"))) %>% 
+  mutate(scenario = case_when(task == "PF" ~ "Regular Day",
+                              task == "OF" ~ "Regular Day",
+                              task == "EF" ~ "Regular Day",
                               task == "PO" ~ "In a hurry",
-                              task == "DO" ~ "In a hurry",
+                              task == "FO" ~ "In a hurry",
                               task == "EO" ~ "In a hurry",
                               task == "PE" ~ "Lots of time",
-                              task == "DE" ~ "Lots of time",
+                              task == "FE" ~ "Lots of time",
                               task == "OE" ~ "Lots of time")) %>% 
   group_by(scenario, choice) %>% 
   count() %>% 
@@ -619,30 +656,39 @@ corrplot(scenario_choice_chisq$residuals, is.cor = FALSE)
 
 decision_points %>% 
   select(subject, task, choice) %>% 
-  mutate(task = factor(task, levels = c("PD", "DO", "DE", "PO", "OD", "OE", "PE", "ED", "EO"))) %>% 
-  mutate(choice = factor(choice, levels = c("N", "E", "O", "D"))) %>% 
-  mutate(scenario = case_when(task == "PD" ~ "Regular Day",
-                              task == "OD" ~ "Regular Day",
-                              task == "ED" ~ "Regular Day",
+  mutate(task = case_when(task == "PD" ~ "PF",
+                          task == "OD" ~ "OF",
+                          task == "ED" ~ "EF",
+                          task == "DO" ~ "FO",
+                          task == "DE" ~ "FE",
+                          TRUE ~  as.character(task))) %>% 
+  mutate(task = factor(task, levels = c("PF", "OF", "EF", "PO", "FO", "EO", "PE", "FE", "OE"))) %>% 
+  mutate(choice = case_when(choice == "D" ~ "F",
+         TRUE ~  as.character(choice))) %>% 
+  mutate(choice = factor(choice, levels = c("N", "E", "O", "F"))) %>% 
+  mutate(scenario = case_when(task == "PF" ~ "Regular Day",
+                              task == "OF" ~ "Regular Day",
+                              task == "EF" ~ "Regular Day",
                               task == "PO" ~ "In a hurry",
-                              task == "DO" ~ "In a hurry",
+                              task == "FO" ~ "In a hurry",
                               task == "EO" ~ "In a hurry",
                               task == "PE" ~ "Lots of time",
-                              task == "DE" ~ "Lots of time",
+                              task == "FE" ~ "Lots of time",
                               task == "OE" ~ "Lots of time")) %>% 
   group_by(scenario, choice) %>% 
   ggplot(aes(x = choice)) +
   geom_bar(alpha = 0.8) +
   aes(fill = choice) +
-  scale_fill_brewer(palette = "Set2", guide = FALSE) + 
+  # scale_fill_brewer(palette = "Set2", guide = FALSE) + 
+  scale_fill_brewer(palette = "Set1", guide = FALSE) +
   coord_flip() +
   facet_wrap(~scenario) +
-  labs(title = "Choice per Scenario",
+  labs(title = "",
        x = "",
-       y = "") +
+       y = "Number of participants") +
   theme_tufte(base_family = "Avenir", ticks = TRUE)
 
-# ggsave("../outputs/choice_per_scenario.png", width=8, height=5)
+ggsave("../outputs/choice_per_scenario.png", width=8, height=3)
 ```
 
 
@@ -652,24 +698,28 @@ decision_points %>%
 
 ```{r}
 conf_freq_condition <- post_trial %>% 
-  mutate(pd = pd.conf, po = po.conf, pe = pe.conf, do = do.conf, de = de.conf, od = od.conf, oe = oe.conf, ed = ed.conf, eo = eo.conf) %>% 
-  select(subject, pd, do, de, po, od, oe, pe, ed, eo) %>%
+  mutate(PF = pd.conf, PO = po.conf, PE = pe.conf, FO = do.conf, FE = de.conf, OF = od.conf, OE = oe.conf, EF = ed.conf, EO = eo.conf) %>% 
+  select(subject, PF, OF, EF, PO, FO, EO, PE, FE, OE) %>%
   melt(id("subject")) %>% 
   group_by(variable, value) %>% 
   count()
 
 post_trial %>% 
-  mutate(pd = pd.conf, po = po.conf, pe = pe.conf, do = do.conf, de = de.conf, od = od.conf, oe = oe.conf, ed = ed.conf, eo = eo.conf) %>% 
-  select(subject, pd, do, de, po, od, oe, pe, ed, eo) %>% 
+  mutate(PF = pd.conf, PO = po.conf, PE = pe.conf, FO = do.conf, FE = de.conf, OF = od.conf, OE = oe.conf, EF = ed.conf, EO = eo.conf) %>% 
+  select(subject, PF, OF, EF, PO, FO, EO, PE, FE, OE) %>%
   melt(id("subject")) %>% 
   ggplot(aes(x = value)) +
   geom_bar() +
   aes(fill = variable) + 
   scale_fill_viridis_d(guide = FALSE) + 
+  scale_x_continuous(breaks=seq(1, 7, 1)) +
   facet_wrap(~variable) +
+  labs(title = "",
+       x = "Confidence rating",
+       y = "Number of participants") +
   theme_tufte(base_family = "Avenir", ticks = FALSE)
 
-# ggsave("../outputs/confidence_per_condition.png", width=8, height=5)
+ggsave("../outputs/confidence_per_condition.png", width=8, height=3)
 ```
 
 *Shapiro-Wilk's Test*
