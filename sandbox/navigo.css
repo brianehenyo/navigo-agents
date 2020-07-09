@@ -17,6 +17,26 @@ body {
     font-weight: bold;
 }
 
+.routeB {
+    color: red;
+    font-weight: bold;
+}
+
+.routeA {
+    color: royalblue;
+    font-weight: bold;
+}
+
+.routeC {
+    color: darkorange;
+    font-weight: bold;
+}
+
+.routeD {
+    color: green;
+    font-weight: bold;
+}
+
 audio {
     margin-bottom: 10px;
 }

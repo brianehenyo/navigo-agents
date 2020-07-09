@@ -43,8 +43,8 @@ def synthesize_text(text):
         # name='ja-JP-Wavenet-B' # JP Explorer
         # name='ja-JP-Wavenet-A' # JP Familiarization
         # name='en-US-Wavenet-A' # EN Familiarization
-        # name='en-US-Wavenet-D' # EN Driver 
-        name='en-US-Wavenet-E' # EN Optimal
+        name='en-US-Wavenet-D' # EN Driver 
+        # name='en-US-Wavenet-E' # EN Optimal
         # name='en-US-Wavenet-B' # EN Explorer
         # name='fil-PH-Wavenet-A' # PH Agent
         # ssml_gender=texttospeech.enums.SsmlVoiceGender.NEUTRAL
@@ -63,7 +63,7 @@ def synthesize_text(text):
     response = client.synthesize_speech(input=input_text, voice=voice, audio_config=audio_config)
 
     # The response's audio_content is binary.
-    fileName = 'study4/generic_straight_unselfish.mp3'
+    fileName = 'study4/generic_right_optimal.mp3'
     with open(fileName, 'wb') as out:
         out.write(response.audio_content)
         print('Audio content written to file ', fileName)
